@@ -50,7 +50,7 @@ Make sure you have the following installed:
 ## Technologies Used 🛠️  
 - React  
 - TypeScript  
-- React Hooks (useState, useEffect, useMemo, ...)  
+- React Hooks (useState, useEffect, useMemo, useReducer)  
 - Tailwind for styling  
 - Vite for fast development  
 
