@@ -1,6 +1,4 @@
-// dependencies
 import { v4 as uuidv4 } from "uuid";
-
 import { categories } from "../data/categories";
 import {
   Dispatch,
@@ -15,6 +13,7 @@ import type {
   ActivityActions,
   ActivityState,
 } from "../reducers/activityReducer";
+import { PlusCircleIcon } from "@heroicons/react/24/solid";
 
 type FormProps = {
   dispatch: Dispatch<ActivityActions>;
@@ -52,7 +51,6 @@ export default function Form({ dispatch, activityState }: FormProps) {
       e.target.id === "calories"
     ) {
       const isNumeric = ["category", "calories"].includes(e.target.id);
-
       const isNan = isNaN(+e.target.value);
 
       setactivity({
@@ -86,15 +84,15 @@ export default function Form({ dispatch, activityState }: FormProps) {
 
   return (
     <form
-      className="rounded-xl bg-white text-gray-950 space-y-2.5 py-10 px-7"
+      className="rounded-xl bg-gray-700 text-gray-100 space-y-4 py-8 px-6 shadow-lg transition-all duration-300 ease-in-out hover:shadow-emerald-900/20"
       onSubmit={handleSubmit}
     >
-      <div className="grid grid-cols-1 gap-4">
-        <label className="font-bold capitalize" htmlFor="category">
+      <div className="grid grid-cols-1 gap-3">
+        <label className="font-semibold capitalize text-emerald-300" htmlFor="category">
           Category
         </label>
         <select
-          className="border-slate-300 p-2.5 rounded-xl bg-gray-100 capitalize"
+          className="border border-gray-600 p-3 rounded-lg bg-gray-800 text-gray-200 capitalize focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 outline-none"
           name="category"
           id="category"
           value={activity.category}
@@ -103,7 +101,7 @@ export default function Form({ dispatch, activityState }: FormProps) {
           {categories.map((category) => (
             <option
               key={category.id}
-              className="capitalize"
+              className="capitalize bg-gray-800"
               value={category.id}
             >
               {category.type}
@@ -113,11 +111,11 @@ export default function Form({ dispatch, activityState }: FormProps) {
       </div>
 
       <div className="grid grid-cols-1 gap-3">
-        <label className="font-bold capitalize" htmlFor="type">
+        <label className="font-semibold capitalize text-emerald-300" htmlFor="type">
           Type
         </label>
         <input
-          className="rounded-xl bg-gray-100 p-2.5"
+          className="rounded-lg bg-gray-800 border border-gray-600 p-3 text-gray-200 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 outline-none"
           id="type"
           type="text"
           placeholder={
@@ -131,11 +129,11 @@ export default function Form({ dispatch, activityState }: FormProps) {
       </div>
 
       <div className="grid grid-cols-1 gap-3">
-        <label className="font-bold capitalize" htmlFor="calories">
+        <label className="font-semibold capitalize text-emerald-300" htmlFor="calories">
           Calories
         </label>
         <input
-          className="rounded-xl bg-gray-100 p-2.5"
+          className="rounded-lg bg-gray-800 border border-gray-600 p-3 text-gray-200 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-300 outline-none"
           step={10.0}
           id="calories"
           type="number"
@@ -146,10 +144,11 @@ export default function Form({ dispatch, activityState }: FormProps) {
       </div>
 
       <button
-        className="bg-lime-600 hover:bg-lime-500 hover:cursor-pointer text-center mx-auto block mt-10 text-xl px-5 py-3 rounded-lg font-black w-full uppercase text-white transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="bg-emerald-600 hover:bg-emerald-500 hover:cursor-pointer text-center mx-auto mt-8 text-lg px-5 py-3 rounded-lg font-bold w-full uppercase text-white transition-all duration-300 shadow-md disabled:opacity-50 disabled:cursor-not-allowed transform hover:translate-y-[-2px] active:translate-y-[1px] flex items-center justify-center"
         type="submit"
         disabled={!isValidActivity}
       >
+        <PlusCircleIcon className="w-5 h-5 mr-2" />
         Save {activity.category === 1 ? "food" : "exercise"}
       </button>
     </form>
