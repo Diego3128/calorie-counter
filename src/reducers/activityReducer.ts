@@ -19,8 +19,13 @@ export type ActivityState = {
   activeId: Activity["id"];
 };
 
+export const getLocalActivities = (): Activity[] => {
+  const activities = localStorage.getItem("activities");
+  return activities ? JSON.parse(activities) : [];
+};
+
 export const initialState: ActivityState = {
-  activities: [],
+  activities: getLocalActivities(),
   activeId: "",
 };
 
@@ -57,11 +62,13 @@ export const activityReducer = (
 
     case "delete-activity":
       const activityId = action.payload.acitivityId;
-      
+
       return {
         ...state,
-        activities : state.activities.filter(activity => activity.id !== activityId),
-        activeId: (state.activeId === activityId) ? '' : state.activeId
+        activities: state.activities.filter(
+          (activity) => activity.id !== activityId
+        ),
+        activeId: state.activeId === activityId ? "" : state.activeId,
       };
 
     default:
