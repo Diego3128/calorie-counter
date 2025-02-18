@@ -1,9 +1,10 @@
-import { useEffect, useReducer } from "react";
+import { useEffect, useMemo, useReducer } from "react";
 import Form from "./components/Form";
 import { activityReducer, initialState } from "./reducers/activityReducer";
 import { ActivityList } from "./components/ActivityList";
 
 function App() {
+
   const [activityState, dispatch] = useReducer(activityReducer, initialState);
 
   useEffect(() => {
@@ -13,6 +14,8 @@ function App() {
     );
   }, [activityState]);
 
+  const canRestartApp = useMemo(()=> activityState.activities.length, [activityState.activities])
+
   return (
     <>
       <header className="bg-lime-600 py-4">
@@ -20,6 +23,13 @@ function App() {
           <h1 className="capitalize font-bold text-amber-50 text-2xl ">
             calorie counter
           </h1>
+          <button
+          disabled={!canRestartApp}
+          onClick={()=> dispatch({type: "restart-app"})}
+          className=" p-2.5 font-bold bg-slate-800 text-white rounded-xl cursor-pointer capitalize  disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-950 "
+          >
+            reset record
+          </button>
         </div>
       </header>
 

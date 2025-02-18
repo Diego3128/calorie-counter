@@ -12,7 +12,8 @@ export type ActivityActions =
   | {
       type: "delete-activity";
       payload: { acitivityId: Activity["id"] };
-    };
+    }
+  | { type: "restart-app" };
 
 export type ActivityState = {
   activities: Activity[];
@@ -70,6 +71,11 @@ export const activityReducer = (
         ),
         activeId: state.activeId === activityId ? "" : state.activeId,
       };
+    case "restart-app":
+      return {
+        activities: [],
+        activeId: ''
+      }
 
     default:
       return state;
