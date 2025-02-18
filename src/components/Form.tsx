@@ -1,19 +1,28 @@
 // dependencies
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
 import { categories } from "../data/categories";
-import { Dispatch, useMemo, useState } from "react";
-import { ChangeEvent, FormEvent } from "react";
-import type { Activity } from '../types/index';
-import { ActivityActions } from "../reducers/activityReducer";
+import {
+  Dispatch,
+  useEffect,
+  useMemo,
+  useState,
+  ChangeEvent,
+  FormEvent,
+} from "react";
+import type { Activity } from "../types/index";
+import type {
+  ActivityActions,
+  ActivityState,
+} from "../reducers/activityReducer";
 
 type FormProps = {
-  dispatch: Dispatch<ActivityActions>
-}
+  dispatch: Dispatch<ActivityActions>;
+  activityState: ActivityState;
+};
 
-export default function Form({dispatch}: FormProps) {
-
-  const INITIALSTATE : Activity = {
+export default function Form({ dispatch, activityState }: FormProps) {
+  const INITIALSTATE: Activity = {
     id: uuidv4(),
     category: 1,
     type: "",
@@ -22,44 +31,63 @@ export default function Form({dispatch}: FormProps) {
 
   const [activity, setactivity] = useState<Activity>(INITIALSTATE);
 
+  useEffect(() => {
+    if (activityState.activeId) {
+      //fill out the form with the selected activity
+      const selectedActivity = activityState.activities.find(
+        (activity) => activity.id === activityState.activeId
+      );
+      if (selectedActivity) setactivity(selectedActivity);
+    } else {
+      setactivity(INITIALSTATE);
+    }
+  }, [activityState.activeId]);
 
-  const handleChange = (e: ChangeEvent<HTMLSelectElement> | ChangeEvent<HTMLInputElement> ) => {
-    
-    if(e.target.id === "category" || e.target.id === "type" || e.target.id === "calories"){
-
+  const handleChange = (
+    e: ChangeEvent<HTMLSelectElement> | ChangeEvent<HTMLInputElement>
+  ) => {
+    if (
+      e.target.id === "category" ||
+      e.target.id === "type" ||
+      e.target.id === "calories"
+    ) {
       const isNumeric = ["category", "calories"].includes(e.target.id);
 
       const isNan = isNaN(+e.target.value);
 
       setactivity({
         ...activity,
-        [e.target.id] : (isNumeric && !isNan) ? +e.target.value : 
-        (!isNumeric) ? e.target.value : activity[e.target.id]
+        [e.target.id]:
+          isNumeric && !isNan
+            ? +e.target.value
+            : !isNumeric
+            ? e.target.value
+            : activity[e.target.id],
       });
     }
-  }
+  };
 
   // validate form inputs
   const isValidActivity = useMemo(() => {
-    const {calories, type} = activity;
-    return type.trim() !== '' && calories > 0;
+    const { calories, type } = activity;
+    return type.trim() !== "" && calories > 0;
   }, [activity]);
 
   // save an activity in activityState
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    dispatch({type: "save-activity", payload: {newActivity: activity}});
+    dispatch({ type: "save-activity", payload: { newActivity: activity } });
     // reset form
     setactivity({
       ...INITIALSTATE,
-      id: uuidv4()
+      id: uuidv4(),
     });
-  }
+  };
 
   return (
-    <form 
-    className="rounded-xl bg-white text-gray-950 space-y-2.5 py-10 px-7"
-    onSubmit={handleSubmit}
+    <form
+      className="rounded-xl bg-white text-gray-950 space-y-2.5 py-10 px-7"
+      onSubmit={handleSubmit}
     >
       <div className="grid grid-cols-1 gap-4">
         <label className="font-bold capitalize" htmlFor="category">
@@ -73,7 +101,11 @@ export default function Form({dispatch}: FormProps) {
           onChange={handleChange}
         >
           {categories.map((category) => (
-            <option key={category.id} className="capitalize" value={category.id}>
+            <option
+              key={category.id}
+              className="capitalize"
+              value={category.id}
+            >
               {category.type}
             </option>
           ))}
@@ -86,8 +118,13 @@ export default function Form({dispatch}: FormProps) {
         </label>
         <input
           className="rounded-xl bg-gray-100 p-2.5"
-          id="type" type="text"
-          placeholder={activity.category === 1 ? "Describe your food" : "Describe your exercise"}
+          id="type"
+          type="text"
+          placeholder={
+            activity.category === 1
+              ? "Describe your food"
+              : "Describe your exercise"
+          }
           value={activity.type}
           onChange={handleChange}
         />
@@ -101,7 +138,8 @@ export default function Form({dispatch}: FormProps) {
           className="rounded-xl bg-gray-100 p-2.5"
           step={10.0}
           id="calories"
-          type="number" placeholder="E.g. 250"
+          type="number"
+          placeholder="E.g. 250"
           value={activity.calories}
           onChange={handleChange}
         />

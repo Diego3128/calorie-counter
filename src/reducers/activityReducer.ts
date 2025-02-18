@@ -1,16 +1,27 @@
 import { Activity } from "../types/index";
 
-export type ActivityActions = {
-  type: "save-activity";
-  payload: { newActivity: Activity };
-};
+export type ActivityActions =
+  | {
+      type: "save-activity";
+      payload: { newActivity: Activity };
+    }
+  | {
+      type: "set-activeId";
+      payload: { activeId: Activity["id"] };
+    }
+  | {
+      type: "delete-activity";
+      payload: { acitivityId: Activity["id"] };
+    };
 
-type ActivityState = {
+export type ActivityState = {
   activities: Activity[];
+  activeId: Activity["id"];
 };
 
 export const initialState: ActivityState = {
   activities: [],
+  activeId: "",
 };
 
 export const activityReducer = (
@@ -19,10 +30,40 @@ export const activityReducer = (
 ): ActivityState => {
   switch (action.type) {
     case "save-activity":
+      let updatedActivities: Activity[] = [];
+
+      if (action.payload.newActivity.id === state.activeId) {
+        // edit existing activity
+        updatedActivities = state.activities.map((activity) => {
+          return activity.id === state.activeId
+            ? action.payload.newActivity
+            : activity;
+        });
+      } else {
+        //add new activity
+        updatedActivities = [...state.activities, action.payload.newActivity];
+      }
+
       return {
         ...state,
-        activities: [...state.activities, action.payload.newActivity]
-      }
+        activities: updatedActivities,
+        activeId: "",
+      };
+    case "set-activeId":
+      return {
+        ...state,
+        activeId: action.payload.activeId,
+      };
+
+    case "delete-activity":
+      const activityId = action.payload.acitivityId;
+      
+      return {
+        ...state,
+        activities : state.activities.filter(activity => activity.id !== activityId),
+        activeId: (state.activeId === activityId) ? '' : state.activeId
+      };
+
     default:
       return state;
   }
